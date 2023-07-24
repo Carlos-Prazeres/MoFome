@@ -418,6 +418,8 @@ def privacidade_desativar(accountNumber):
 
 
 def RecoverID():
+    global accountsList
+    achou = False
     quantidade_de_usuarios = int(len(accountsList))
 
     username = input("Insira seu nome de usuário: ")
@@ -427,11 +429,9 @@ def RecoverID():
     for i in range(quantidade_de_usuarios):
         thisAccountDict = accountsList[i]
 
-    #verifica qual é a conta em que a senha e o nome de usuário são iguais a senha e o nome e usuário que o usuário que está tentando recuperar o ID colocou.
-
-    for i in range(quantidade_de_usuarios):            
+    #verifica qual é a conta em que a senha e o nome de usuário são iguais a senha e o nome e usuário que o usuário que está tentando recuperar o ID colocou.       
         if username == thisAccountDict['user'] and senha == thisAccountDict['senha']:
-            print(f"Seu id é {quantidade_de_usuarios - 1}")
+            print(f"Seu id é {i}")
             achou = True
             break
         else:
