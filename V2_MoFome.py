@@ -422,20 +422,20 @@ def RecoverID():
     achou = False
     quantidade_de_usuarios = int(len(accountsList))
 
-    username = input("Insira seu nome de usuário: ")
+    username= input("Insira seu nome de usuário: ")
 
     senha = input("Insira sua senha: ")
 
     for i in range(quantidade_de_usuarios):
         thisAccountDict = accountsList[i]
-
-    #verifica qual é a conta em que a senha e o nome de usuário são iguais a senha e o nome e usuário que o usuário que está tentando recuperar o ID colocou.       
         if username == thisAccountDict['user'] and senha == thisAccountDict['senha']:
-            print(f"Seu id é {i}")
+            print(f"Seu id é {i}\n")
             achou = True
             break
         else:
             achou = False
+
+
     if achou == False:
         print("\nO nome de usuário e/ou a senha podem estar incorretos.\n")
 
@@ -516,7 +516,6 @@ while True:
             
         lista_de_nomes_de_usuarios.append(new_user)
 
-        new_user = new_user.lower()
         newAccount(newAccount, new_password, new_user )
         accountNumber = int (len(accountsList) - 1)
         print ('Seu id é o número', accountNumber)
