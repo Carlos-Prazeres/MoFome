@@ -1,0 +1,583 @@
+{% extends 'MoFome/base.html' %}
+{% block conteudo %}
+    
+
+    <div class="container-xl px-4 mt-4">
+        <nav class="nav nav-borders">
+          <a class="nav-link active ms-0"  style="  color: black; font-size: 20px;" href="{% url 'receitas' %}">Receitas</a>
+          <a class="nav-link active ms-0"	 style="color: black; font-size: 20px;" href="{% url 'receitas-create' %}" >Criar Receitas</a>
+          <a class="nav-link active ms-0" style="color: black; font-size: 20px;" href="{% url 'minhasreceitas' %}">Suas Receitas</a>  
+          <a class="nav-link active ms-0"	 style="color: black; font-size: 20px;" href="{% url 'receitas-favoritas'  %}" >Receitas Favoritas</a>
+        </nav>
+      <hr class="mt-0 mb-4">
+    
+      <div class="row justify-content-center">
+        <div class="col-xl-12">
+          <div class="col-xl-8" style="width: 105%;">
+            <div class="card mb-4">
+              <div class="card-header1" style="color:black; text-transform: uppercase; font-size: 22px; text-align: center;">
+                
+                <div style="flex-grow: 1; display: flex; justify-content: center;">{{ object.title }}</div>
+                <a href="{% url 'receitas-favoritar' object.pk %}" class="favorite-icon">
+                  {% if object in request.user.profile.receitas_favoritas.all %}
+                      <i class="fas fa-heart text-danger"></i> 
+                  {% else %}      
+                      <i class="far fa-heart"></i> 
+                  {% endif %}
+              </a>
+            </div>
+              <div class="card-body d-flex">
+                <div class="text-center" style="margin-left: 30px;">
+                  <h2 style="font-size: 13.5px; margin-bottom: 20px;">Autor da Receita</h2>
+                  <img class="rounded-circle img-account-profile" src="{{ receita.autor.profile.image.url }}" alt="">
+                  <div style="margin-top: 10px;">
+                    <a style="font-size: 15px; color: black;" href="{% url 'perfil-outro' username=object.autor %}">{{ object.autor }}</a>
+                  </div>
+                  <h2 style="font-size: 13px; margin-top: 10px;">Postado em: {{object.data_post_brasil}}</h2>
+                  {% if object not in user.profile.receitas_avaliadas.all and object.autor != request.user  %}
+                  <h2 style="font-size: 14px; margin-top: 30px;">Avaliar Receita</h2>
+                  <div class="rating" style="font-size: 12px;">
+                    <form method="post" action="{% url 'avaliar_receita' pk=object.id %}">
+                      {% csrf_token %}
+                      <button class="star" name="avaliacao" value="1" data-rating="1">&#9733;</button>
+                      <button class="star" name="avaliacao" value="2" data-rating="2">&#9733;</button>
+                      <button class="star" name="avaliacao" value="3" data-rating="3">&#9733;</button>
+                      <button class="star" name="avaliacao" value="4" data-rating="4">&#9733;</button>
+                      <button class="star" name="avaliacao" value="5" data-rating="5">&#9733;</button>
+                    </form>
+                  </div>
+                  {% elif object.autor == request.user %}
+                  <div>
+                    <h2 style="font-size: 14.5px; margin-top: 10px; margin-bottom: 30px;"></h2>
+                  </div>
+                  {% else %}
+                  <div>
+                    <h2 style="font-size: 14.5px; margin-top: 30px; margin-bottom: 30px;">Receita avaliada</h2>
+                  </div>
+                  {% endif %}
+                </div>
+                  
+                <div class="text-center" style="flex-grow: 1; display: flex; flex-direction: column; align-items: center;">
+                  {% if receita.quantidade_de_avaliacoes != 0 %}
+                    <h2 style="font-size: 18px; margin-top: 15px; margin-right: 20px;">Nota média da receita: {{receita.media}}</h2>
+                    <h2>
+                    <span class="star1 {% if receita.media >= 1 %}selected{% endif %}">&#9733;</span>
+                    <span class="star1 {% if receita.media >= 2 %}selected{% endif %}">&#9733;</span>
+                    <span class="star1 {% if receita.media >= 3 %}selected{% endif %}">&#9733;</span>
+                    <span class="star1 {% if receita.media >= 4 %}selected{% endif %}">&#9733;</span>
+                    <span class="star1 {% if receita.media >= 5 %}selected{% endif %}">&#9733;</span>
+                  </h2>
+                  {% endif %}
+                  {% if receita.quantidade_de_avaliacoes == 0 and object.autor == request.user%}
+                    <h2 style="font-size: 18px; margin-top: 10px;  margin-bottom: 5px; margin-right: 20px;">Nenhuma avaliação</h2>
+                  {% endif %}
+                  {% if receita.quantidade_de_avaliacoes == 0 and object.autor != request.user %}
+                    <h2 style="font-size: 18px; margin-top: 10px;  margin-bottom: 45px; margin-right: 20px;">Nenhuma avaliação</h2>
+                  {% endif %}
+                  {% if receita.quantidade_de_avaliacoes == 1%}
+                    <h2 style="font-size: 18px; margin-top: 10px; margin-bottom: 45px; margin-right: 20px;">{{receita.quantidade_de_avaliacoes}} avaliação</h2>
+                  {% endif %}
+                  {% if receita.quantidade_de_avaliacoes > 1%}
+                    <h2 style="font-size: 18px; margin-top: 10px;  margin-bottom: 45px; margin-right: 20px;">{{receita.quantidade_de_avaliacoes}} avaliações</h2>
+                  {% endif %}
+
+
+                  {% if receita.quantidade_de_avaliacoes > 0 %}
+                  <div style="display: flex; align-items: center; margin-top: 18px;">
+                    <h2 style="font-size: 18px; margin-right: 40px;">
+                      {% if object.dificuldade == 1 %}
+                        <span style="font-size: 18px; color: black;">&#127859;</span> Dificuldade: fácil
+                      {% elif object.dificuldade == 2 %}
+                        <span style="font-size: 18px;">&#127859;</span> Dificuldade: médio
+                      {% else %}
+                        <span style="font-size: 18px;">&#127859;</span> Dificuldade: difícil
+                      {% endif %}
+                    </h2>
+              
+                    <h2 style="font-size: 18px;">
+                      {% if object.custo == 1 %}
+                        <span style="font-size: 18px; color: rgb(5, 188, 5);">R$</span> Custo baixo
+                      {% elif object.custo == 2 %}
+                        <span style="font-size: 18px; color: rgb(5, 188, 5);">R$</span> Custo médio
+                      {% else %}
+                        <span style="font-size: 18px; color: rgb(5, 188, 5);">R$</span> Custo alto
+                      {% endif %}
+                    </h2>
+
+                    <h2 style="font-size: 18px; margin-right: 50px;">
+                        {% if object.horas == 0 %}
+                          {% if object.minutos == 1%}
+                            <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);"></i> {{object.minutos}} minuto</h2>           
+                          {% elif object.minutos > 1%}
+                            <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);;"></i> {{object.minutos}} minutos</h2> 
+                          {% endif %}     
+                        {% elif object.horas == 1%}
+                          {% if object.minutos == 0%}
+                            <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);;"></i> {{object.horas}} hora</h2>           
+                          {% elif object.minutos < 10 %}
+                            <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);;"></i> {{object.horas}}:0{{object.minutos}}h</h2>           
+                          {% elif object.minutos >= 10 %}
+                            <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);;"></i> {{object.horas}}:{{object.minutos}}h</h2> 
+                          {% endif %}          
+                        {% elif object.horas > 1 and object.horas < 3%}
+                          {% if object.minutos == 0%}
+                              <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: orange;"></i> {{object.horas}} horas</h2>           
+                            {% elif object.minutos < 10 %}
+                              <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: orange;"></i> {{object.horas}}:0{{object.minutos}}h</h2>           
+                            {% elif object.minutos >= 10 %}
+                              <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: orange;"></i> {{object.horas}}:{{object.minutos}}h</h2>           
+                            {% endif %}
+                        {% else %}
+                            {% if object.minutos == 0%}
+                              <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: red;"></i> {{object.horas}} horas</h2>           
+                            {% elif object.minutos < 10 %}
+                              <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: red;"></i> {{object.horas}}:0{{object.minutos}}h</h2>           
+                            {% elif object.minutos >= 10 %}
+                              <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: red;"></i> {{object.horas}}:{{object.minutos}}h</h2>           
+                            {% endif %}
+                        {% endif %}
+                    </h2>
+
+
+
+        
+
+                    <h2 style="font-size: 18px; margin-right: 50px;">
+                     {% if object.pessoas == 1 %}
+                      <span style="font-size: 18px; color: black;"><i class="fas fa-user"></i></span> {{object.pessoas}} pessoa
+                      {% else %}
+                      <span style="font-size: 18px; color:black;"><i class="fas fa-users"></i></span> {{object.pessoas}} pessoas
+                      {% endif %}
+                    </h2>
+                  {% endif %}
+
+                    
+
+                    {% if receita.quantidade_de_avaliacoes == 0 %}
+
+                    <div style="display: flex; align-items: center; margin-top: 140px">
+                      <h2 style="font-size: 18px; margin-right: 50px;">
+                        {% if object.dificuldade == 1 %}
+                          <span style="font-size: 18px; color: black;">&#127859;</span>Dificuldade: fácil
+                        {% elif object.dificuldade == 2 %}
+                          <span style="font-size: 18px;">&#127859;</span> Dificuldade: médio
+                        {% else %}
+                          <span style="font-size: 18px;">&#127859;</span> Dificuldade: difícil
+                        {% endif %}
+                      </h2>
+                
+                      <h2 style="font-size: 18px;">
+                        {% if object.custo == 1 %}
+                          <span style="font-size: 18px; color: rgb(5, 188, 5);">R$</span> Custo baixo
+                        {% elif object.custo == 2 %}
+                          <span style="font-size: 18px; color: rgb(5, 188, 5);">R$</span> Custo médio
+                        {% else %}
+                          <span style="font-size: 18px; color: rgb(5, 188, 5);">R$</span> Custo alto
+                        {% endif %}
+                      </h2>
+
+
+                      <h2 style="font-size: 18px; margin-right: 50px;">
+                        {% if object.horas == 0 %}
+                          {% if object.minutos == 1%}
+                            <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);"></i> {{object.minutos}} minuto</h2>           
+                          {% elif object.minutos > 1%}
+                            <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);;"></i> {{object.minutos}} minutos</h2> 
+                          {% endif %}     
+                        {% elif object.horas == 1%}
+                          {% if object.minutos == 0%}
+                            <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);;"></i> {{object.horas}} hora</h2>           
+                          {% elif object.minutos < 10 %}
+                            <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);;"></i> {{object.horas}}:0{{object.minutos}}h</h2>           
+                          {% elif object.minutos >= 10 %}
+                            <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);;"></i> {{object.horas}}:{{object.minutos}}h</h2> 
+                          {% endif %}          
+                        {% elif object.horas > 1 and object.horas < 3%}
+                          {% if object.minutos == 0%}
+                              <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: orange;"></i> {{object.horas}} horas</h2>           
+                            {% elif object.minutos < 10 %}
+                              <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: orange;"></i> {{object.horas}}:0{{object.minutos}}h</h2>           
+                            {% elif object.minutos >= 10 %}
+                              <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: orange;"></i> {{object.horas}}:{{object.minutos}}h</h2>           
+                            {% endif %}
+                        {% else %}
+                            {% if object.minutos == 0%}
+                              <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: red;"></i> {{object.horas}} horas</h2>           
+                            {% elif object.minutos < 10 %}
+                              <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: red;"></i> {{object.horas}}:0{{object.minutos}}h</h2>           
+                            {% elif object.minutos >= 10 %}
+                              <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: red;"></i> {{object.horas}}:{{object.minutos}}h</h2>           
+                            {% endif %}
+                        {% endif %}
+                    </h2>
+                     
+
+
+
+
+
+                      <h2 style="font-size: 18px; margin-right: 50px;">
+                       {% if object.pessoas == 1 %}
+                        <span style="font-size: 18px; color: black;"><i class="fas fa-user"></i></span> {{object.pessoas}} pessoa
+                        {% else %}
+                        <span style="font-size: 18px; color:black;"><i class="fas fa-users"></i></span> {{object.pessoas}} pessoas
+                        {% endif %}
+                      </h2>
+
+
+
+
+
+
+
+                    {% endif %}
+
+
+
+                  </div>
+                </div>
+              
+              
+                <!-- Foto da receita à direita do card -->
+                <img  clas  s="img-fluid" style="height: 170.5px; margin-left: auto; margin-right: 15px; margin-top: 40px; text-align: right;" src="{{ object.imagem.url }}" alt="Foto da Receita">
+                <!-- Exibição centralizada das horas -->
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+     
+  
+  
+          <div class="row justify-content-center">
+            <div class="col-xl-12">
+              <div class="col-xl-8" style="width: 105%;">
+                <div class="card mb-4">
+                  <div class="card-header" style="color:black; font-size: 22px; text-align: center;">Descrição</div>
+                  <div class="card-body">
+                    <h2 class="card-text"  style="font-size: 18.5px; line-height: 1.6; text-align: justify; hyphens: auto;">
+                      {{ object.descricao }}
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row justify-content-center">
+            <div class="col-xl-12">
+              <div class="col-xl-8" style="width: 105%;">
+                <div class="card mb-4">
+                  <div class="card-header" style="color:black; font-size: 22px; text-align: center;">Ingredientes</div>
+                  <div class="card-body">
+                    <h2 class="card-text" style="font-size: 18.5px; line-height: 2.25; text-align: justify; hyphens: auto; list-style-type: disc;">
+                      {{ object.ingredientes|linebreaks }}
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row justify-content-center">
+            <div class="col-xl-12">
+              <div class="col-xl-8" style="width: 105%;">
+                <div class="card mb-4">
+                  <div class="card-header" style="color:black; font-size: 22px; text-align: center;">Modo de Preparo</div>
+                  <div class="card-body">
+                    <h2 class="card-text" style="font-size: 18.5px; line-height: 2.25; text-align: justify; hyphens: auto;">
+                      {{ object.modo_de_preparo|linebreaks }}
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+      <div class="row justify-content-center">
+        <div class="col-xl-12" >
+          <div class="col-xl-12" style="width: 105%;" >
+          <hr style="height: 3px; margin-bottom: 40px; margin-top: 40px; color: black;">
+        </div>
+      </div>
+    </div>
+  <div class="row justify-content-center">
+  <div class="col-xl-12">
+    <div class="col-xl-8" style="width: 105%;">
+    <div class="card mb-4">
+      <div class="card-header" style="text-transform: uppercase; font-size: 21px; color: black;">Adicionar Comentário</div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-2">
+            <img class="rounded-circle img-account-profile" src="{{ user.profile.image.url }}" alt="" style="margin-bottom: 25px;" >
+          </div>
+          <form action="{% url 'receita-comentario' object.id %}" method="post">
+            {% csrf_token %}
+          <div class="col-md-10">
+            <div class="col-xl-12">
+              <div>
+								<textarea class="input-with-line" minlength=1 maxlength=5000 rows=1 name="comentario" placeholder="Adicione um comentário..." type="text" style="font-size: 19px;margin-bottom: 10px; width: 120%;"></textarea>
+							</div>
+              <button type="submit" class="btn btn-primary mt-2">Enviar Comentário</button>
+            </div>
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+    <div class="row justify-content-center">
+      <div class="col-xl-12">
+        <div class="col-xl-8" style="width: 105%;">
+        <div class="card mb-4">
+            <div class="card-header" style="text-transform: uppercase; font-size: 23px; color: black;">Comentários</div>
+            {% if comentarios %}
+                {% for comentario in comentarios %}
+                <div class="card-body">
+              
+                    <div class="comment-container">
+                        <div class="comment-user">
+                            <img class="rounded-circle img-account-profile" src="{{ comentario.autor.profile.image.url }}"  style="margin-bottom: 10px;">
+                        </div>
+                            <a style="font-size: 17px; margin-top: 5px; color: black;" href="{% url 'perfil-outro' username=receita.autor %}" >{{comentario.autor.username}}</a>
+                            <h2 style="font-size: 15px; margin-bottom: 16px; margin-top: 10px;">Postado em: {{comentario.data_comentario_brasil}}</h2>
+                    
+                        
+                            <div class="comment-text">
+                                <p class="input-with-line" style="font-size: 17.5px;">{{ comentario.comentario }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% endfor %}
+                {% else %}
+                    <strong style="margin: 15px; color: black; font-size: 17px;">Sem comentários.</strong>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const stars = document.querySelectorAll(".star");
+
+    stars.forEach((star, index) => {
+      star.addEventListener("click", function () {
+        const rating = index + 1; 
+        console.log("User selected rating:", rating);
+
+        stars.forEach((s) => s.classList.remove("selected"));
+
+        for (let i = 0; i <= index; i++) {
+          stars[i].classList.add("selected");
+        }
+
+        const csrfToken = getCookie("csrftoken"); // Obter o token CSRF do cookie
+        const url = "{% url 'avaliar_receita' object.id %}";
+        const data = { rating: rating };
+
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken, // Incluir o token CSRF no cabeçalho
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Rating sent to backend:", data);
+          })
+          .catch((error) => {
+            console.error("Error sending rating:", error);
+          });
+      });
+
+      star.addEventListener("mouseover", function () {
+        for (let i = 0; i <= index; i++) {
+          stars[i].classList.add("hovered");
+        }
+      });
+
+      star.addEventListener("mouseout", function () {
+        stars.forEach((s) => s.classList.remove("hovered"));
+      });
+    });
+  });
+  const descriptionTextarea = document.querySelector('textarea[name="comentario"]');
+            
+      descriptionTextarea.addEventListener('input', () => {
+        descriptionTextarea.style.height = 'auto';
+        descriptionTextarea.style.height = descriptionTextarea.scrollHeight + 'px';
+      });
+</script>
+
+
+
+
+
+
+
+<style>
+  body {
+    background-color: #f2f6fc;
+    color: #69707a;
+  }
+  .img-account-profile {
+    height: 50px;
+    width: 50px;
+  }
+  .rounded-circle {
+    border-radius: 100% !important;
+  }
+  .card {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.35);
+  }
+  .card-header1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    text-transform: uppercase;
+    background-color: rgb(245, 176, 49);
+    font-size: 25px;
+    font-weight: 500;
+    background-color: rgba(33, 40, 50, 0.03);
+    border-bottom: 1px solid rgba(33, 40, 50, 0.125);
+    padding: 1rem 1.35rem;
+    border-radius: 0.35rem 0.35rem 0 0;
+}
+  .card .card-header {  
+    font-weight: 500;
+    background-color: rgba(33, 40, 50, 0.03);
+    border-bottom: 1px solid rgba(33, 40, 50, 0.125);
+    padding: 1rem 1.35rem;
+    border-radius: 0.35rem 0.35rem 0 0;
+  }
+  .form-control,
+  .dataTable-input {
+    display: block;
+    width: 100%;
+    padding: 0.875rem 1.125rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1;
+    color: #69707a;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #c5ccd6;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0.35rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  .nav-borders .nav-link.active {
+    color: #0061f2;
+    border-bottom-color: #0061f2;
+  }
+  .login_btn {
+    width: 100%;
+    background: #9f9e9e !important;
+    color: white !important;
+  }
+  .nav-borders .nav-link {
+    color: #69707a;
+    border-bottom-width: 0.125rem;
+    border-bottom-style: solid;
+    border-bottom-color: transparent;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+  .receita-card {
+    margin-top: 20px;
+    padding: 10px;
+  }
+  .input-with-line {
+      border: none;
+      border-bottom: 1px solid #ccc; 
+      outline: none;
+      padding: 5px 0; 
+      padding-bottom: 1px;
+      box-sizing: border-box;
+      word-wrap: break-word; 
+      width: 100%;
+  overflow: hidden;
+      resize: none;
+    }
+  
+  .rating {
+      display: inline-block;
+      font-size: 24px;
+      margin-top: 10px;
+    }
+
+  .star {
+      font-size: 24px;
+      cursor: pointer;
+      color: #ccc;
+    }
+
+  .star.hovered,
+  .star.selected {
+      color: yellow;
+    }
+    .comment-container {
+    position: relative; 
+    }
+    .comment-user {
+        margin-right: 10px;
+    }
+    .comment-content {
+        display: flex;
+        flex-direction: column;
+    }
+    .comment-options {
+        position: absolute; 
+        top: 0; 
+        right: 0; 
+    }
+    .star {
+      font-size: 24px;
+      cursor: pointer;
+      color: #ccc;
+      border: none; 
+      background: none;
+      outline: none; 
+    }
+    .star1 {
+      font-size: 24px;
+      color: #ccc;
+      margin-right: 5px;
+    }
+    .star1.selected {
+      color: rgb(202, 202, 0);
+    }
+    .card-text,
+    h2,
+    h3,
+    p {
+      font-size: 80%;
+    }
+</style>
+
+
+{% endblock %}
+

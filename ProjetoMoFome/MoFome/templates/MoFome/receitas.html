@@ -1,0 +1,258 @@
+{% extends 'MoFome/base.html' %}
+{% block conteudo %}
+    <style>
+      body {
+        background-color: #f2f6fc;
+        color: #575d66;
+      }
+      .img-account-profile {
+        height: 50px;
+        width: 50px;
+      }
+      .rounded-circle {
+        border-radius: 100% !important;
+      }
+      .card {
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.35);
+       }
+      .card .card-header {
+        font-weight: 500;
+        background-color: rgba(33, 40, 50, 0.03);
+        border-bottom: 1px solid rgba(33, 40, 50, 0.125);
+        padding: 1rem 1.35rem;
+        border-radius: 0.35rem 0.35rem 0 0;
+      }
+      .form-control,
+      .dataTable-input {
+        display: block;
+        width: 100%;
+        padding: 0.875rem 1.125rem;
+        font-size: 0.875rem;
+        font-weight: 400;
+        line-height: 1;
+        color: #585c62;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #9ba1aa;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: 0.35rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      }
+      .nav-borders .nav-link.active {
+        color: #0061f2;
+        border-bottom-color: #0061f2;
+      }
+      .login_btn {
+        width: 100%;
+        background: #33ccff !important;
+        color: white !important;
+      }
+      .nav-borders .nav-link {
+        color: #69707a;
+        border-bottom-width: 0.125rem;
+        border-bottom-style: solid;
+        border-bottom-color: transparent;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: 1rem;
+        margin-right: 1rem;
+      }
+      .receita-card {
+        margin-top: 20px;
+        padding: 10px;
+      }
+      .custom-description {
+      display: flex;
+      justify-content: left;
+      align-items: left;
+      text-align: left;
+      background-color: #ffffff;
+      border: 1px solid #9d9d9d;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    .rating {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    }
+    .star {
+      font-size: 24px;
+      color: #ccc;
+      margin-right: 5px;
+    }
+    .star.selected {
+      color: yellow;
+    }
+    
+    </style>
+  
+
+    <div class="container-xl px-4 mt-4">
+    
+      <nav class="nav nav-borders">
+        <a class="nav-link active ms-0"  style="  color: black; font-size: 20px;" href="{% url 'receitas' %}">Receitas</a>
+          <a class="nav-link active ms-0"	 style="color: black; font-size: 20px;" href="{% url 'receitas-create' %}" >Criar Receitas</a>
+          <a class="nav-link active ms-0" style="color: black; font-size: 20px;" href="{% url 'minhasreceitas' %}">Suas Receitas</a>
+          <a class="nav-link active ms-0"	 style="color: black; font-size: 20px;" href="{% url 'receitas-favoritas'  %}" >Receitas Favoritas</a>
+         </nav>
+      <hr class="mt-0 mb-4">
+      <div class="col-xl-8">
+         </div>
+    </div>
+  </div>
+</div>
+<div class="row justify-content-center" style="padding: 40px; padding-left: 115px; padding-right: 117px;">
+  <div class="col-xl-4">
+
+    <div class="card mb-4 mb-xl-0">
+      <div class="card-header" style="text-transform: uppercase; text-align: center;">
+        <a style="color: black;">Ordenar receitas por:</a>
+      </div>
+      <form method="GET" class="mb-4" style="padding: 20px; display: flex; align-items: center;">
+        <select name="ordenacao" id="ordenacao" class="form-select" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-right: 10px;">
+          <option value="data">Data do Post</option>
+          <option value="avaliacoes">Quantidade de Avaliações</option>
+        </select>
+        <button type="submit" class="btn btn-primary" style="padding: 10px; border-radius: 5px;">Aplicar</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+
+
+{% for receita in receitas %}
+
+<div class="row justify-content-center receita-card">
+  <div class="col-md-8" style="width: 80%;">
+    <div class="card mb-4">
+      <div class="card-header" style="text-transform: uppercase;">
+        <a href="{% url 'receitas-detail' pk=receita.id %}" style="color: black;">{{ receita.title }}</a>
+       
+      </div>
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-md-3   text-center align-self-start" style="margin-left: 20px;">
+            <h2 style="font-size: 15px; margin-bottom: 15px;">Autor da Receita</h2>
+            <img class="rounded-circle img-account-profile" src="{{ receita.autor.profile.image.url }}" alt="">
+            <div style="margin-top: 10px;">
+              <a style="font-size: 15px; color: black;" href="{% url 'perfil-outro' username=receita.autor %}">{{ receita.autor }}</a>
+          </div class="rating">
+            <h2 style="font-size: 12px; margin-top: 5px;">Postado em: {{ receita.data_post_brasil }}</h2>
+            {% if receita.quantidade_de_avaliacoes != 0 %}
+              <h2 style="font-size: 14px; margin-top: 15px;">Nota média da receita: {{receita.media}}</h2>
+              <span class="star {% if receita.media >= 1 %}selected{% endif %}">&#9733;</span>
+              <span class="star {% if receita.media >= 2 %}selected{% endif %}">&#9733;</span>
+              <span class="star {% if receita.media >= 3 %}selected{% endif %}">&#9733;</span>
+              <span class="star {% if receita.media >= 4 %}selected{% endif %}">&#9733;</span>
+              <span class="star {% if receita.media >= 5 %}selected{% endif %}">&#9733;</span>
+            {% endif %}
+            {% if receita.quantidade_de_avaliacoes == 0 %}
+              <h2 style="font-size: 14px; margin-top: 10px;">Nenhuma avaliação</h2>
+            {% endif %}
+            {% if receita.quantidade_de_avaliacoes == 1%}
+              <h2 style="font-size: 14px; margin-top: 10px;">{{receita.quantidade_de_avaliacoes}} avaliação</h2>
+            {% endif %}
+            {% if receita.quantidade_de_avaliacoes > 1%}
+              <h2 style="font-size: 14px; margin-top: 10px;">{{receita.quantidade_de_avaliacoes}} avaliações</h2>
+            {% endif %}
+            
+          </div>
+          
+          
+          <div class="col-md-4 align-self-start" style="margin-right: 30px; margin-left : 25px;">
+    
+            <h2 style="font-size: 15px; margin-bottom: 5px;">Descrição da receita</h2>
+            <div class="form-control custom-description" style="line-height: 1.6;">
+              {{ receita.descricao }}
+            </div>
+            <div>
+              
+              <div style="display: flex; align-items: center; margin-top: 70px;">
+                <h2 style="font-size: 18px; margin-right: 40px;">
+                  {% if receita.dificuldade == 1 %}
+                    <span style="font-size: 18px; color: black;">&#127859;</span> Dificuldade: fácil
+                  {% elif receita.dificuldade == 2 %}
+                    <span style="font-size: 18px;">&#127859;</span> Dificuldade: médio
+                  {% else %}
+                    <span style="font-size: 18px;">&#127859;</span> Dificuldade: difícil
+                  {% endif %}
+                </h2>
+          
+                <h2 style="font-size: 18px;">
+                  {% if receita.custo == 1 %}
+                    <span style="font-size: 18px; color: rgb(5, 188, 5);">R$</span> Custo baixo
+                  {% elif receita.custo == 2 %}
+                    <span style="font-size: 18px; color: rgb(5, 188, 5);">R$</span> Custo médio
+                  {% else %}
+                    <span style="font-size: 18px; color: rgb(5, 188, 5);">R$</span> Custo alto
+                  {% endif %}
+                </h2>
+
+                <h2 style="font-size: 18px; margin-right: 50px;">
+                    {% if receita.horas == 0 %}
+                      {% if receita.minutos == 1%}
+                        <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);"></i> {{receita.minutos}} minuto</h2>           
+                      {% elif receita.minutos > 1%}
+                        <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);;"></i> {{receita.minutos}} minutos</h2> 
+                      {% endif %}     
+                    {% elif receita.horas == 1%}
+                      {% if receita.minutos == 0%}
+                        <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);;"></i> {{receita.horas}} hora</h2>           
+                      {% elif receita.minutos < 10 %}
+                        <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);;"></i> {{receita.horas}}:0{{receita.minutos}}h</h2>           
+                      {% elif receita.minutos >= 10 %}
+                        <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: rgb(8, 184, 8);;"></i> {{receita.horas}}:{{receita.minutos}}h</h2> 
+                      {% endif %}          
+                    {% elif receita.horas > 1 and receita.horas < 3%}
+                      {% if receita.minutos == 0%}
+                          <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: orange;"></i> {{receita.horas}} horas</h2>           
+                        {% elif receita.minutos < 10 %}
+                          <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: orange;"></i> {{receita.horas}}:0{{receita.minutos}}h</h2>           
+                        {% elif receita.minutos >= 10 %}
+                          <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: orange;"></i> {{receita.horas}}:{{receita.minutos}}h</h2>           
+                        {% endif %}
+                    {% else %}
+                        {% if receita.minutos == 0%}
+                          <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: red;"></i> {{receita.horas}} horas</h2>           
+                        {% elif receita.minutos < 10 %}
+                          <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: red;"></i> {{receita.horas}}:0{{receita.minutos}}h</h2>           
+                        {% elif receita.minutos >= 10 %}
+                          <h2 style="font-size: 18px; margin-right: 50px;"><i class="fas fa-clock" style="color: red;"></i> {{receita.horas}}:{{receita.minutos}}h</h2>           
+                        {% endif %}
+                    {% endif %}
+                </h2>
+
+
+
+    
+
+                <h2 style="font-size: 18px; margin-right: 50px;">
+                 {% if receita.pessoas == 1 %}
+                  <span style="font-size: 18px; color: black;"><i class="fas fa-user"></i></span> {{receita.pessoas}} pessoa
+                  {% else %}
+                  <span style="font-size: 18px; color:black;"><i class="fas fa-users"></i></span> {{receita.pessoas}} pessoas
+                  {% endif %}
+                </h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 text-center align-self-start">
+            <img class="img-fluid" style="height: 243.5px;" src="{{ receita.imagem.url }}" alt="Foto da Receita">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endfor %}
+</div>  
+{% endblock %}
+

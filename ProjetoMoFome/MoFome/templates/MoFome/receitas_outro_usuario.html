@@ -1,0 +1,173 @@
+{% extends 'MoFome/base.html' %}
+{% block conteudo %}
+
+    <style>
+      body {
+        background-color: #f2f6fc;
+        color: #69707a;
+      }
+      .img-account-profile {
+        height: 50px;
+        width: 50px;
+      }
+      .rounded-circle {
+        border-radius: 100% !important;
+      }
+      .card {
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.35);
+      }
+      .card .card-header {
+        font-weight: 500;
+        background-color: rgba(33, 40, 50, 0.03);
+        border-bottom: 1px solid rgba(33, 40, 50, 0.125);
+        padding: 1rem 1.35rem;
+        border-radius: 0.35rem 0.35rem 0 0;
+      }
+      .form-control,
+      .dataTable-input {
+        display: block;
+        width: 100%;
+        padding: 0.875rem 1.125rem;
+        font-size: 0.875rem;
+        font-weight: 400;
+        line-height: 1;
+        color: #69707a;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #c5ccd6;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: 0.35rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.65s ease-in-out;
+      }
+      .nav-borders .nav-link.active {
+        color: #0061f2;
+        border-bottom-color: #0061f2;
+      }
+      .login_btn {
+        width: 100%;
+        background: #33ccff !important;
+        color: white !important;
+      }
+      .nav-borders .nav-link {
+        color: #69707a;
+        border-bottom-width: 0.125rem;
+        border-bottom-style: solid;
+        border-bottom-color: transparent;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: 1rem;
+        margin-right: 1rem;
+      }
+      .receita-card {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding: 10px;
+      }
+      .rating {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+        }
+        .star {
+          font-size: 24px;
+          color: #ccc;
+          margin-right: 5px;
+        }
+        .star.selected {
+          color: yellow;
+        }
+      
+      
+    
+    </style>
+    <div class="container-xl px-4 mt-4">
+      <nav class="nav nav-borders  ">
+        <a class="nav-link active ms-0"  style="color: black; font-size: 20px;" href="{% url 'perfil-outro' perfil_outro_usuario.user.username %}">Perfil de {{perfil_outro_usuario.user.username}}</a>
+			<a class="nav-link active ms-0"	 style="color: black; font-size: 20px;" href="{% url 'receitas_outro_usuario' 	perfil_outro_usuario.user.username %}" >Receitas de {{perfil_outro_usuario.user.username}}</a>
+			
+	  </nav>
+
+      <hr class="mt-0 mb-4">
+
+   
+      
+      </div>
+    </div>    
+      <div class="row justify-content-center">
+
+        {% if receitas|length == 0%}
+
+        <div class="row justify-content-center"  style="padding: 40px; padding-left: 115px; padding-right: 117px;">
+            <div class="col-xl-9">
+      
+              <div class="card mb-4 mb-xl-0">
+                <div class="card-header" style="text-transform: uppercase; text-align: center;">
+                  <a   style="color: black;">Esse usuário não tem receitas postadas.</a>
+                </div>
+              
+                </div>
+              </div>
+            </div>
+
+
+
+        {% endif %}
+
+
+        {% for receita in receitas %}
+    <div class="row justify-content-center receita-card">
+      <div class="col-md-8">
+        <div class="card mb-4">
+          <div class="card-header" style="text-transform: uppercase;">
+            <a href="{% url 'receitas-detail' pk=receita.id %}" style="color: black;">{{ receita.title }}</a>
+          </div>
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-md-3   text-center align-self-start" style="margin-left: 20px;">
+                <h2 style="font-size: 15px; margin-bottom: 15px;">Autor da Receita</h2>
+                <img class="rounded-circle img-account-profile" src="{{ receita.autor.profile.image.url }}" alt="">
+                <div style="margin-top: 10px;">
+                  <a style="font-size: 15px; color: black;" href="{% url 'perfil-outro' username=receita.autor %}">{{ receita.autor }}</a>
+              </div>
+                <h2 style="font-size: 10px; margin-top: 5px;">Postado em: {{ receita.data_post_brasil }}</h2>
+                    {% if receita.quantidade_de_avaliacoes != 0 %}
+                  <h2 style="font-size: 14px; margin-top: 15px;">Nota média da receita: {{receita.media}}</h2>
+                  <span class="star {% if receita.media >= 1 %}selected{% endif %}">&#9733;</span>
+                  <span class="star {% if receita.media >= 2 %}selected{% endif %}">&#9733;</span>
+                  <span class="star {% if receita.media >= 3 %}selected{% endif %}">&#9733;</span>
+                  <span class="star {% if receita.media >= 4 %}selected{% endif %}">&#9733;</span>
+                  <span class="star {% if receita.media >= 5 %}selected{% endif %}">&#9733;</span>
+                {% endif %}
+                {% if receita.quantidade_de_avaliacoes == 0 %}
+                  <h2 style="font-size: 14px; margin-top: 10px;">Nenhuma avaliação</h2>
+                {% endif %}
+                {% if receita.quantidade_de_avaliacoes == 1%}
+                  <h2 style="font-size: 14px; margin-top: 10px;">{{receita.quantidade_de_avaliacoes}} avaliação</h2>
+                {% endif %}
+                {% if receita.quantidade_de_avaliacoes > 1%}
+                  <h2 style="font-size: 14px; margin-top: 10px;">{{receita.quantidade_de_avaliacoes}} avaliações</h2>
+                {% endif %}
+              </div>
+              <div class="col-md-4 align-self-start" style="margin-right: 30px; margin-left: 25px;">
+        
+                <h2 style="font-size: 15px; margin-bottom: 5px;">Descrição da receita</h2>
+                <div class="form-control custom-description" style="line-height: 1.6;">
+                  {{ receita.descricao }}
+                </div>
+              </div>
+              <div class="col-md-4 text-center align-self-start">
+                <img class="img-fluid" style="height: 213.5px;" src="{{ receita.imagem.url }}" alt="Foto da Receita">
+              </div>
+            </div>
+          </div>  
+        </div>
+      </div>
+    </div>
+{% endfor %}
+      </div>
+    </div>
+{% endblock %}
