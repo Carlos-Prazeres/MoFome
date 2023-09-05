@@ -124,7 +124,19 @@ class Sistema():
                         action3 = input("\nInsira a opção: ")
 
                         if action3 == '1':
-                            Receitas.criarReceita(self, conta)
+                            recipeName = input("\nInsira o nome da receita: ")
+                            ingredients = input("\nInsira os ingredientes: ")
+                            howToCook = input("\nInsira o modo de preparo: ")
+                            recipeType = input("\nSe a sua receita é salgada digite 1,se for doce digite 2\n")
+
+                            if recipeType == '1':
+                                newRecipe = saltyRecipes(recipeName, ingredients, howToCook)
+                                newRecipe.criarReceita(conta)
+
+
+                            elif recipeType == '2':
+                                newRecipe = sweetRecipes(recipeName, ingredients, howToCook)
+                                newRecipe.criarReceita(conta)
                 
                         if action3 == '2':
                             Receitas.avaliarReceitas(self, conta)
@@ -785,7 +797,10 @@ class Inscricoes():
             print(f'\nErro: {e}')
 
 class Receitas():
-    def __init__(self):
+    def __init__(self, recipeName, ingredients, howToCook):
+        self.recipeName = recipeName
+        self.ingredients = ingredients
+        self.howToCook = howToCook
         self.receitasDict = {}
 
     def contaDeQuemPostouAReceita(self):
@@ -827,39 +842,15 @@ class Receitas():
         except Exception as e:
             print(f"\nErro inesperado: {e}")
 
-    def criarReceita(self, conta):
-        try:
-            filename = f"Receita_{conta.idReceita}_userID({conta.getAccountNumber()}).txt"
-
-            with open(filename, "w", encoding="utf8") as file:
-                if True:
-                    file.write(f"Esta receita foi postada pelo usuário {conta.username.capitalize()}\n\n")
-                    file.write(f"Avaliação média da receita: 0.0  (0 avaliações).\n\n")
-                    nomeDaReceita = input("Escreva o nome da receita: ")
-                    file.write(f"Nome da receita: {nomeDaReceita}\n\n")
-                    ingredientes = input("Escreva os ingredientes: ")
-                    file.write(f"Ingredientes: {ingredientes}\n\n")
-                    modoDePreparo = input("Escreva o modo de preparo: ")
-                    file.write(f"Modo de preparo: {modoDePreparo}\n\n\n")
-                    file.write("Comentários:\n\n")
-
-            conteudo = f"{nomeDaReceita}{ingredientes}{modoDePreparo}"
-            
-            conta.conteudoEscritoNaReceita.append(conteudo)
-            
-            Sistema.notificacaoAosInscritosReceita(self, conta)
-            
-            conta.listaReceitas(filename)
-            
-        except Exception as e:
-            print(f"\nErro inesperado ao criar receita: {e}")
+    def criarReceita(self):
+        pass
 
     def avaliarReceitas(self, contaAvaliador):
         try:
             amigo = True
             conta = Receitas.contaDeQuemPostouAReceita(self)
 
-            if conta.getAccountNumber() == contaAvaliador.accountNumber:
+            if conta.getAccountNumber() == contaAvaliador.getAccountNumber():
                 print("\nVocê não pode avaliar a sua própria receita.\n")
                 return
 
@@ -1157,23 +1148,21 @@ class GerenciarReceitasETopicos():
         except Exception as e:
             print(f"Ocorreu um erro ao deletar comentário em tópico: {str(e)}")
 
-
-
     def deletarComentarioReceita(self, conta):
         try:
             if len(conta.listaDeComentariosReceitas) == 0:
                 print("\nVocê não tem comentários postados em receitas.")
-                return
 
             self.comentarios = conta.PassarComentariosReceitas()
+
             self.filename = conta.PassarArquivosDosComentariosReceitas()
 
             for i in range(len(self.filename)):
                 filename = self.filename[i]
                 if os.path.isfile(filename):
                     for i in range(len(self.comentarios)):
-                        texto_antigo = (f"{conta.username.capitalize()} (ID: {conta.getAccountNumber()}): {self.comentarios[i]}\n")
-                        self.deletarComentarioNesseArquivo(filename, texto_antigo)
+                        texto_antigo = (f"{conta.username.capitalize()} (ID: {conta.accountNumber}): {self.comentarios[i]}\n")
+                        GerenciarReceitasETopicos.deletarComentarioNesseArquivo(self, filename, texto_antigo)
 
             print("\nOs seus comentários em receitas foram apagados.")
 
@@ -1263,7 +1252,6 @@ class GerenciarReceitasETopicos():
             
         except Exception as e:
             print(f"Ocorreu um erro ao apagar comentário na própria receita: {str(e)}")
-
     
     def filtroDeReceitas(self, filename, palavraProcurada, conteudoEscritoNaReceita):
         try:
@@ -1408,5 +1396,61 @@ class GerenciarReceitasETopicos():
                 
         except Exception as e:
             print(f"Ocorreu um erro ao deletar o comentário no arquivo: {str(e)}")
+
+class saltyRecipes(Receitas):
+    def __init__(self, recipeName, ingredients, howToCook):
+        super().__init__(recipeName, ingredients, howToCook)
+ 
+    def criarReceita(self, conta):
+        try:
+            filename = f"Receita_{conta.idReceita}_userID({conta.getAccountNumber()}).txt"
+ 
+            with open(filename, "w", encoding="utf8") as file:
+                if True:
+                    file.write(f"Esta receita salgada foi postada pelo usuário {conta.username.capitalize()}\n\n")
+                    file.write(f"Avaliação média da receita: 0.0  (0 avaliações).\n\n")
+                    file.write(f"Nome da receita: {self.recipeName}\n\n")
+                    file.write(f"Ingredientes: {self.ingredients}\n\n")
+                    file.write(f"Modo de preparo: {self.howToCook}\n\n\n")
+                    file.write("Comentários:\n\n")
+ 
+            conteudo = f"{self.recipeName}{self.ingredients}{self.howToCook}"
+ 
+            conta.conteudoEscritoNaReceita.append(conteudo)
+ 
+            Sistema.notificacaoAosInscritosReceita(self, conta)
+ 
+            conta.listaReceitas(filename)
+ 
+        except Exception as e:
+            print(f"\nErro inesperado ao criar receita: {e}")
+ 
+class sweetRecipes(Receitas):
+    def __init__(self, recipeName, ingredients, howToCook):
+        super().__init__(recipeName, ingredients, howToCook)
+ 
+    def criarReceita(self, conta):
+        try:
+            filename = f"Receita_{conta.idReceita}_userID({conta.getAccountNumber()}).txt"
+ 
+            with open(filename, "w", encoding="utf8") as file:
+                if True:
+                    file.write(f"Esta receita doce foi postada pelo usuário {conta.username.capitalize()}\n\n")
+                    file.write(f"Avaliação média da receita: 0.0  (0 avaliações).\n\n")
+                    file.write(f"Nome da receita: {self.recipeName}\n\n")
+                    file.write(f"Ingredientes: {self.ingredients}\n\n")
+                    file.write(f"Modo de preparo: {self.howToCook}\n\n\n")
+                    file.write("Comentários:\n\n")
+ 
+            conteudo = f"{self.recipeName}{self.ingredients}{self.howToCook}"
+ 
+            conta.conteudoEscritoNaReceita.append(conteudo)
+ 
+            Sistema.notificacaoAosInscritosReceita(self, conta)
+ 
+            conta.listaReceitas(filename)
+ 
+        except Exception as e:
+            print(f"\nErro inesperado ao criar receita: {e}")
 
 login = Sistema()
