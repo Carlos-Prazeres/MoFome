@@ -20,9 +20,9 @@ class Account():
         self.conteudoEscritoNoTopico = []
         self.mensagensFeitas = []
         self.name = name
-        self.password = password
+        self.__password = password
         self.username = username
-        self.accountNumber = accountNumber
+        self.__accountNumber = accountNumber
         self.idReceita = 1
         self.idTopico = 1
         self.modoPrivacidade = 0
@@ -37,18 +37,21 @@ class Account():
         print("\nModo de privacidade está desativado.\n")
 
     def ChecarSenha(self, password):
-        senha = False
-        if password != self.password:
-            while senha == False:
-                password = input("Senha incorreta. Insira novamente: ")
-                if password == self.password:
-                    senha = True
+        while True:
+            try:
+                if password != self.__password:
+                    raise ValueError("Senha incorreta.")
                 else:
-                    senha = False
+                    break
+                
+            except ValueError as e:
+                print(e)
+                password = input("Insira a senha novamente: ")
+    
 
     def show(self):
         print(f"\nNome: {self.name}")
-        print(f"Senha: {self.password}")
+        print(f"Senha: {self.__password}")
         print(f"Nome de usuário: {self.username}")
 
         if self.modoPrivacidade == 1:
@@ -163,3 +166,12 @@ class Account():
     def PassarArquivosDosComentariosReceitas(self):
         filename = self.arquivosComentariosReceitas
         return filename
+    
+    def getAccountNumber(self):
+        return self.__accountNumber
+    
+    def getPassword(self):
+        return self.__password
+    
+    def passwordSetter(self, newPassword):
+        self.__password = newPassword
