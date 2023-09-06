@@ -2,6 +2,8 @@ class Account():
     def __init__(self, name, password, username, accountNumber): 
         self.listaDeAmigos = []
         self.listaDeReceitas = []
+        self.recipeDictID = 0
+        self.recipeDict = {}
         self.listaDeTopicos = []
         self.arquivosComentariosTopicos = []
         self.arquivosComentariosReceitas = []
