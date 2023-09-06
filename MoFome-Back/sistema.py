@@ -127,7 +127,7 @@ class Sistema():
                             recipeName = input("\nInsira o nome da receita: ")
                             ingredients = input("\nInsira os ingredientes: ")
                             howToCook = input("\nInsira o modo de preparo: ")
-                            recipeType = input("\nSe a sua receita é salgada digite 1,se for doce digite 2\n")
+                            recipeType = input("\nSe a sua receita é salgada digite 1, se for doce digite 2\n")
 
                             if recipeType == '1':
                                 newRecipe = saltyRecipes(recipeName, ingredients, howToCook)
@@ -418,7 +418,7 @@ class Sistema():
         numeroDaConta = Sistema.verificarNumeroDaConta(self, 4)
         contaParaBloquear = Sistema.username(self, numeroDaConta)
 
-        if contaParaBloquear.accountNumber == conta.getAccountNumber():
+        if contaParaBloquear.getAccountNumber() == conta.getAccountNumber():
             print("\nVocê não pode se bloquear.")
             return
 
@@ -441,7 +441,7 @@ class Sistema():
 
         contaParaDesbloquear = Sistema.username(self, numeroDaConta)
 
-        if contaParaDesbloquear.accountNumber == conta.getAccountNumber():
+        if contaParaDesbloquear.getAccountNumber() == conta.getAccountNumber():
             print("\nVocê não pode se bloquear.")
             return
 
@@ -521,7 +521,7 @@ class Sistema():
     def addFriends(self, conta):
         userAmigo = Sistema.contaAmigo(self, 1)
 
-        if userAmigo.accountNumber == conta.getAccountNumber():
+        if userAmigo.getAccountNumber() == conta.getAccountNumber():
             print ("\nVocê não pode se adicionar.")
             return
 
