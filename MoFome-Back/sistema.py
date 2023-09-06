@@ -119,6 +119,7 @@ class Sistema():
                         print ("Digite 6 para apagar todas as suas receitas.")
                         print ("Digite 7 para procurar uma receita com a palavra/frase inserida.")
                         print ("Digite 8 para visualizar alguma receita.")
+                        print ("Digite 9 para mostrar todas as suas receitas.")
                         print ("Digite 20 para retornar ao menu.")
 
                         action3 = input("\nInsira a opção: ")
@@ -132,11 +133,16 @@ class Sistema():
                             if recipeType == '1':
                                 newRecipe = saltyRecipes(recipeName, ingredients, howToCook)
                                 newRecipe.criarReceita(conta)
+                                conta.recipeDict[conta.recipeDictID] = newRecipe
+                                conta.recipeDictID = conta.recipeDictID + 1
+
 
 
                             elif recipeType == '2':
                                 newRecipe = sweetRecipes(recipeName, ingredients, howToCook)
                                 newRecipe.criarReceita(conta)
+                                conta.recipeDict[conta.recipeDictID] = newRecipe
+                                conta.recipeDictID = conta.recipeDictID + 1
                 
                         if action3 == '2':
                             Receitas.avaliarReceitas(self, conta)
@@ -158,6 +164,13 @@ class Sistema():
                         
                         if action3 == '8':
                             GerenciarReceitasETopicos.visualizarReceita(self, conta)
+
+                        if action3 == '9':
+                            i = 0
+                            while i < conta.recipeDictID:
+                                recipe = conta.recipeDict[i]
+                                recipe.visualize()
+                                i += 1
                         
                         if action3 == '20':
                             break
@@ -1424,6 +1437,12 @@ class saltyRecipes(Receitas):
  
         except Exception as e:
             print(f"\nErro inesperado ao criar receita: {e}")
+        
+    def visualize(self):
+        print(f"\n  Receita Salgada\n\n    {self.recipeName}\n\n    {self.ingredients}\n\n    {self.howToCook}")
+
+
+    
  
 class sweetRecipes(Receitas):
     def __init__(self, recipeName, ingredients, howToCook):
@@ -1452,5 +1471,8 @@ class sweetRecipes(Receitas):
  
         except Exception as e:
             print(f"\nErro inesperado ao criar receita: {e}")
+
+    def visualize(self):
+        print(f"\n  Receita Doce\n\n    {self.recipeName}\n\n    {self.ingredients}\n\n    {self.howToCook}")
 
 login = Sistema()
