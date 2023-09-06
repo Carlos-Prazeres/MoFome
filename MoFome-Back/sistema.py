@@ -135,14 +135,15 @@ class Sistema():
                                 newRecipe.criarReceita(conta)
                                 conta.recipeDict[conta.recipeDictID] = newRecipe
                                 conta.recipeDictID = conta.recipeDictID + 1
-
-
-
                             elif recipeType == '2':
                                 newRecipe = sweetRecipes(recipeName, ingredients, howToCook)
                                 newRecipe.criarReceita(conta)
                                 conta.recipeDict[conta.recipeDictID] = newRecipe
                                 conta.recipeDictID = conta.recipeDictID + 1
+                            else:
+                                while recipeType != '1' and recipeType != '2':
+                                    recipeType = input("\nSe a sua receita é salgada digite 1, se for doce digite 2\n")
+
                 
                         if action3 == '2':
                             Receitas.avaliarReceitas(self, conta)
@@ -166,11 +167,17 @@ class Sistema():
                             GerenciarReceitasETopicos.visualizarReceita(self, conta)
 
                         if action3 == '9':
-                            i = 0
-                            while i < conta.recipeDictID:
-                                recipe = conta.recipeDict[i]
-                                recipe.visualize()
-                                i += 1
+
+                            if conta.recipeDictID != 0:
+                                i = 0
+                                while i < conta.recipeDictID:
+                                    recipe = conta.recipeDict[i]
+                                
+                                    recipe.visualize()
+                                    i += 1
+                            else:
+                                print("\nVocê não tem receitas postadas.\n")
+                                return
                         
                         if action3 == '20':
                             break
